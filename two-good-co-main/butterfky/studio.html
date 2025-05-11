@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Gallery</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Flip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/CustomEase.min.js"></script>
+</head>
+<body>
+    <style>
+        @import url("https://fonts.cdnfonts.com/css/thegoodmonolith");
+        @import url("https://fonts.cdnfonts.com/css/pp-neue-montreal");
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "TheGoodMonolith", monospace;
+            background-color: #0a0a0a;
+            color: #f0f0f0;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Enhanced preloader */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #0a0a0a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.8s cubic-bezier(0.65, 0.05, 0.36, 1), visibility 0.8s cubic-bezier(0.65, 0.05, 0.36, 1);
+        }
+
+        .preloader-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .preloader-counter {
+            font-family: "PP Neue Montreal", sans-serif;
+            font-size: 7rem;
+            color: #f0f0f0;
+            opacity: 1;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
+        }
+
+        .preloader-bar {
+            width: 200px;
+            height: 2px;
+            background-color: #333;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preloader-progress {
+            height: 100%;
+            width: 0%;
+            background-color: #f0f0f0;
+            transition: width 0.05s ease-out;
+        }
+
+        .preloader-text {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            opacity: 0.7;
+        }
+
+        .preloader-hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* Main container */
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Grid layout */
+        .grid-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 8px;
+            width: 100%;
+            height: 100%;
+            will-change: transform;
+            padding: 8px;
+        }
+
+        .grid-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.65, 0.05, 0.36, 1);
+        }
+
+        .grid-item:hover {
+            transform: scale(0.98);
+        }
+
+        .grid-item-img {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.5s cubic-bezier(0.65, 0.05, 0.36, 1);
+        }
+
+        .grid-item:hover .grid-item-img {
+            transform: scale(1.05);
+        }
+
+        /* Target image (5th image) */
+        .grid-item.target {
+            grid-column: 2;
+            grid-row: 2;
+        }
+
+        /* Grid item title overlay */
+        .grid-item-title {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            color: #fff;
+            font-family: "PP Neue Montreal", sans-serif;
+            font-size: 1rem;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s cubic-bezier(0.65, 0.05, 0.36, 1);
+        }
+
+        .grid-item:hover .grid-item-title {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Add grid-item-overlay class */
+        .grid-item-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Slide layers - stacking order is important */
+        /* Base layer - current slide */
+        .slider-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-size: cover;
+            background-position: center;
+            z-index: 80;
+            opacity: 0;
+            visibility: hidden;
+            will-change: transform, opacity;
+        }
+
+        /* Background parallax layer */
+        .slider-image-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 110%;
+            height: 110vh;
+            background-size: cover;
+            background-position: center;
+            z-index: 85; /* Higher than base layer */
+            opacity: 0;
+            visibility: hidden;
+            will-change: transform;
+            transform-origin: center;
+            filter: blur(10px) brightness(0.7);
+        }
+
+        /* Top layer - next slide */
+        .slider-image-next {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-size: cover;
+            background-position: center;
+            z-index: 90; /* Highest z-index to always appear on top */
+            opacity: 0;
+            visibility: hidden;
+            will-change: transform;
+            transform-origin: center;
+        }
+
+        /* Transition overlay */
+        .transition-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: #000;
+            z-index: 95;
+            opacity: 0;
+            visibility: hidden;
+            will-change: opacity;
+        }
+
+        /* Content area */
+        .content {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            opacity: 0;
+            padding: 10% 10%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .content-title {
+            text-align: left;
+            font-family: "PP Neue Montreal", sans-serif;
+            font-size: 5rem;
+            color: #f0f0f0;
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+            text-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .content-title span {
+            display: block;
+            transform: translateY(100%);
+        }
+
+        /* Simple paragraph styling */
+        .content-paragraph {
+            text-align: left;
+            font-family: "TheGoodMonolith", monospace;
+            font-size: 1rem;
+            color: #f0f0f0;
+            max-width: 600px;
+            line-height: 1.3;
+            margin-bottom: 10%;
+            opacity: 0; /* Start hidden */
+            text-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Thumbnails */
+        .thumbnails {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 200;
+        }
+
+        .thumbnail {
+            width: 60px;
+            height: 40px;
+            border-radius: 4px;
+            overflow: hidden;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s cubic-bezier(0.65, 0.05, 0.36, 1);
+            position: relative;
+        }
+
+        .thumbnail-img {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.5s cubic-bezier(0.65, 0.05, 0.36, 1);
+        }
+
+        .thumbnail:hover .thumbnail-img {
+            transform: scale(1.1);
+        }
+
+        .thumbnail:hover {
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        }
+
+        .thumbnail.active {
+            border: 2px solid #fff;
+        }
+
+        .thumbnail.active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background-color: #fff;
+            border-radius: 50%;
+        }
+
+        /* Switch buttons */
+        .switch {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            background: rgba(17, 17, 17, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 10px 20px;
+            border-radius: 30px;
+            z-index: 1000;
+            transition: padding 0.3s ease-in-out, transform 0.3s ease-in-out;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .switch-button {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-family: "TheGoodMonolith", monospace;
+            font-size: 14px;
+            padding: 5px 15px;
+            position: relative;
+            transition: all 0.3s ease-in-out;
+            border-radius: 20px;
+        }
+
+        .switch-button-current {
+            color: #f0f0f0;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Navigation arrows for slider */
+        .slider-nav {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 200;
+            width: 50px;
+            height: 50px;
+            background: rgba(17, 17, 17, 0.6);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 50%;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.65, 0.05, 0.36, 1);
+            color: #fff;
+            font-size: 18px;
+        }
+
+        .slider-nav:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .slider-nav.prev {
+            left: 20px;
+        }
+
+        .slider-nav.next {
+            right: 20px;
+        }
+
+        /* Slider mode indicator */
+        .slider-indicator {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(17, 17, 17, 0.6);
+            backdrop-filter: blur(5px);
+            padding: 8px 16px;
+            border-radius: 20px;
+            z-index: 200;
+            font-family: "PP Neue Montreal", sans-serif;
+            font-size: 0.8rem;
+            color: #f0f0f0;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.65, 0.05, 0.36, 1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .slider-indicator-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #f0f0f0;
+            border-radius: 50%;
+        }
+    </style>
+
+    <div class="preloader">
+        <div class="preloader-content">
+            <div class="preloader-counter">0</div>
+            <div class="preloader-bar">
+                <div class="preloader-progress"></div>
+            </div>
+            <div class="preloader-text">Loading Experience</div>
+        </div>
+    </div>
+      
+    <div class="container">
+        <div class="grid-container">
+            <div class="grid" id="grid">
+                <div class="grid-item" data-index="0">
+                    <div class="grid-item-overlay"></div>
+                    <div class="grid-item-img" style="background-image:url(https://img.freepik.com/free-photo/still-life-sant-jordi-day-books-roses_23-2151197568.jpg?ga=GA1.1.644520798.1702220524&semt=ais_hybrid&w=740)"></div>
+                    <div class="grid-item-title">URBAN GEOMETRY</div>
+                </div>
+                <div class="grid-item" data-index="1">
+                    <div class="grid-item-overlay"></div>
+                    <div class="grid-item-img" style="background-image:url(https://img.freepik.com/free-photo/creative-collage-landscape_23-2150159321.jpg?ga=GA1.1.644520798.1702220524&semt=ais_hybrid&w=740)"></div>
+                    <div class="grid-item-title">NATURAL ABSTRACTIONS</div>
+                </div>
+                <div class="grid-item" data-index="2">
+                    <div class="grid-item-overlay"></div>
+                    <div class="grid-item-img" style="background-image:url(https://img.freepik.com/free-photo/silhouette-interior-plant-wall_23-2148870671.jpg?t=st=1746438469~exp=1746442069~hmac=9e2f4c8e12c5eb45eca317fecd719289b564764d1577a5187033a93333b2a067&w=740)"></div>
+                    <div class="grid-item-title">SHADOW PLAY</div>
+                </div>
+                <div class="grid-item" data-index="3">
+                    <div class="grid-item-overlay"></div>
+                    <div class="grid-item-img" style="background-image:url(https://img.freepik.com/premium-photo/close-up-hand-holding-flowers_1048944-12978180.jpg?ga=GA1.1.644520798.1702220524&semt=ais_hybrid&w=740)"></div>
+                    <div class="grid-item-title">MINIMALIST FORMS</div>
+                </div>
+                <div class="grid-item target" id="target-item" data-index="4">
+                    <div class="grid-item-overlay"></div>
+                    <div class="grid-item-img" style="background-image:url(https://img.freepik.com/premium-photo/closeup-hands-reaching-crescent-moon-night-sky_665346-136129.jpg?ga=GA1.1.644520798.1702220524&semt=ais_hybrid&w=740)"></div>
+                    <div class="grid-item-title">MONOCHROME SERIES</div>
+                </div>
+                <div class="grid-item" data-index="5">
+                    <div class="grid-item-overlay"></div>
+                    <div class="grid-item-img" style="background-image:url(https://img.freepik.com/free-photo/silhouettes-woman-holding-flower_23-2148870704.jpg?t=st=1746438958~exp=1746442558~hmac=1111c7f3ae9241ea38967d3622ea713cd8150a87e88aa32af05d0b889f49da17&w=740)"></div>
+                    <div class="grid-item-title">TEXTURAL STUDIES</div>
+                </div>
+            </div>
+        </div>
+    </div>
+      
+    <!-- Slide layers in stacking order -->
+    <!-- Base layer - current slide -->
+    <div class="slider-image" id="slider-image"></div>
+    <!-- Background parallax layer -->
+    <div class="slider-image-bg" id="slider-image-bg"></div>
+    <!-- Top layer - next slide -->
+    <div class="slider-image-next" id="slider-image-next"></div>
+    <!-- Transition overlay -->
+    <div class="transition-overlay" id="transition-overlay"></div>
+      
+    <div class="content" id="content">
+        <h1 class="content-title">
+            <span>MONOCHROME SERIES</span>
+        </h1>
+        <div class="content-paragraph" id="content-paragraph">
+            Without color, we see differently. Form and texture speak louder. The world simplified to light and dark reveals truths that color often conceals. In this space between extremes, we find clarity. The photograph becomes a mirror reflecting not just what we see, but how we see.
+        </div>
+    </div>
+      
+    <div class="thumbnails">
+        <div class="thumbnail" data-index="0">
+            <div class="thumbnail-img" style="background-image:url(/api/placeholder/800/600)"></div>
+        </div>
+        <div class="thumbnail" data-index="1">
+            <div class="thumbnail-img" style="background-image:url(/api/placeholder/800/600)"></div>
+        </div>
+        <div class="thumbnail" data-index="2">
+            <div class="thumbnail-img" style="background-image:url(/api/placeholder/800/600)"></div>
+        </div>
+        <div class="thumbnail" data-index="3">
+            <div class="thumbnail-img" style="background-image:url(/api/placeholder/800/600)"></div>
+        </div>
+        <div class="thumbnail active" data-index="4">
+            <div class="thumbnail-img" style="background-image:url(/api/placeholder/800/600)"></div>
+        </div>
+        <div class="thumbnail" data-index="5">
+            <div class="thumbnail-img" style="background-image:url(/api/placeholder/800/600)"></div>
+        </div>
+    </div>
+      
+    <div class="switch" id="switch">
+        <button class="switch-button switch-button-grid switch-button-current">GRID</button>
+        <button class="switch-button switch-button-slider">SLIDER</button>
+    </div>
+
+    <!-- Navigation arrows for slider mode -->
+    <div class="slider-nav prev" id="prev-slide">
+        <i class="fas fa-chevron-left"></i>
+    </div>
+    <div class="slider-nav next" id="next-slide">
+        <i class="fas fa-chevron-right"></i>
+    </div>
+
+    <!-- Slider mode indicator -->
+    <div class="slider-indicator" id="slider-indicator">
+        <div class="slider-indicator-dot"></div>
+        <span>SLIDER MODE</span>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const preloader = document.querySelector(".preloader");
+            const preloaderCounter = document.querySelector(".preloader-counter");
+            const preloaderProgress = document.querySelector(".preloader-progress");
+
+            // Enhanced preloader with smoother counting
+            let count = 0;
+            const duration = 2500; // 2.5 seconds for total loading
+            const interval = 25; // Update every 25ms for smoother animation
+            const increment = 100 / (duration / interval); // Calculate increment for smooth progression
+
+            // Simple interval-based counter with progress bar
+            const counterInterval = setInterval(() => {
+                count += increment;
+
+                if (count <= 100) {
+                    preloaderCounter.textContent = Math.floor(count);
+                    preloaderProgress.style.width = `${count}%`;
+                } else {
+                    // Ensure we reach exactly 100 at the end
+                    preloaderCounter.textContent = "100";
+                    preloaderProgress.style.width = "100%";
+                    clearInterval(counterInterval);
+
+                    // Hide preloader after a short delay
+                    setTimeout(() => {
+                        preloader.classList.add("preloader-hidden");
+
+                        // Initialize the main application
+                        setTimeout(() => {
+                            initApp();
+                        }, 800); // Delay app initialization for smoother transition
+                    }, 500);
+                }
+            }, interval);
+        });
+
+        function initApp() {
+            // Create the custom eases
+            CustomEase.create("mainEase", "M0,0 C0.65,0.05 0.36,1 1,1"); // cubic-bezier(0.65,0.05,0.36,1)
+            CustomEase.create("sideEase", "M0,0 C0.86,0 0.07,1 1,1"); // cubic-bezier(0.86,0,0.07,1)
+            CustomEase.create("natural", "M0,0 C0.34,0.01 0.2,1 1,1");
+            CustomEase.create("cinematic", "M0,0 C0.645,0.045 0.355,1 1,1");
+
+            // Power of 2 timing constants (in seconds)
+            const TIMING = {
+                BASE: 0.512, // 512ms
+                SHORTEST: 0.256, // 256ms
+                SHORT: 0.384, // 384ms
+                LONG: 0.768, // 768ms
+                LONGEST: 1.024, // 1024ms
+                STAGGER_TINY: 0.032, // 32ms
+                STAGGER_SMALL: 0.064, // 64ms
+                STAGGER_MED: 0.128, // 128ms
+                PAUSE: 1.536 // 1536ms
+            };
+
+            // Elements
+            const grid = document.getElementById("grid");
+            const gridContainer = document.querySelector(".grid-container");
+            const gridItems = document.querySelectorAll(".grid-item");
+            const sliderImage = document.getElementById("slider-image");
+            const sliderImageNext = document.getElementById("slider-image-next");
+            const sliderImageBg = document.getElementById("slider-image-bg");
+            const transitionOverlay = document.getElementById("transition-overlay");
+            const content = document.getElementById("content");
+            const contentTitle = document.querySelector(".content-title");
+            const contentTitleSpan = contentTitle.querySelector("span");
+            const contentParagraph = document.getElementById("content-paragraph");
+            const thumbnailItems = document.querySelectorAll(".thumbnail");
+            const switchContainer = document.getElementById("switch");
+            const sliderNavPrev = document.getElementById("prev-slide");
+            const sliderNavNext = document.getElementById("next-slide");
+            const sliderIndicator = document.getElementById("slider-indicator");
+
+            // Switch buttons
+            const switchGrid = document.querySelector(".switch-button-grid");
+            const switchSlider = document.querySelector(".switch-button-slider");
+
+            // State
+            let currentMode = "grid";
+            let isAnimating = false;
+            let activeIndex = 4; // Default to 5th image (index 4)
+            let previousIndex = 4; // Track previous index for transitions
+            let slideDirection = "right"; // Default slide direction
+
+            // Store all image URLs for easy access
+            const imageUrls = Array.from(gridItems).map(
+                (item) => item.querySelector(".grid-item-img").style.backgroundImage
+            );
+
+            // Content for each slide
+            const slideContent = [
+                {
+                    title: "URBAN GEOMETRY",
+                    paragraph:
+                        "The city speaks in angles and lines. What appears chaotic is actually ordered. When we slow down enough to truly see, patterns emerge from noise. Photography is meditation—a practice of presence that reveals the hidden structure beneath the surface of our daily experience."
+                },
+                {
+                    title: "NATURAL ABSTRACTIONS",
+                    paragraph:
+                        "Nature doesn't try to be beautiful. It simply is. These patterns exist whether we observe them or not. The creative act is not about making something new, but about seeing what's already there. True art emerges when we remove ourselves from the equation."
+                },
+                {
+                    title: "SHADOW PLAY",
+                    paragraph:
+                        "Light creates shadow. Shadow defines light. Neither exists without the other. This duality mirrors our own inner landscape. The photograph captures not just the external world, but the photographer's state of mind. What we choose to frame reveals what we value."
+                },
+                {
+                    title: "MINIMALIST FORMS",
+                    paragraph:
+                        "When we strip away the unnecessary, what remains? The essence. The truth. These images aren't about what's there, but what isn't. Silence between notes creates the music. The space between thoughts is where creativity lives. Simplicity is the ultimate sophistication."
+                },
+                {
+                    title: "MONOCHROME SERIES",
+                    paragraph:
+                        "Without color, we see differently. Form and texture speak louder. The world simplified to light and dark reveals truths that color often conceals. In this space between extremes, we find clarity. The photograph becomes a mirror reflecting not just what we see, but how we see."
+                },
+                {
+                    title: "TEXTURAL STUDIES",
+                    paragraph:
+                        "Touch with your eyes. Feel the rough and smooth. These surfaces tell stories of time and transformation. Our minds crave texture—it grounds us in the physical world. In an increasingly digital existence, these tactile reminders connect us to our primal nature and the healing power of sensory experience."
+                }
+            ];
+
+            // Get grid item by index
+            const getGridItemByIndex = (index) => {
+                return document.querySelector(`.grid-item[data-index="${index}"]`);
+            };
+
+            // Update content based on active index
+            const updateContent = (index) => {
+                // Get the content for this index
+                const content = slideContent[index];
+
+                // Update the title
+                contentTitleSpan.textContent = content.title;
+
+                // Update the paragraph
+                contentParagraph.textContent = content.paragraph;
+            };
+
+            // Toggle function
+            const toggleView = (mode) => {
+                if (isAnimating || currentMode === mode) return;
+                isAnimating = true;
+
+                // Update buttons
+                document
+                    .querySelector(".switch-button-current")
+                    .classList.remove("switch-button-current");
+                document
+                    .querySelector(`.switch-button-${mode}`)
+                    .classList.add("switch-button-current");
+
+                // Set new mode
+                currentMode = mode;
+
+                // Run animation
+                if (mode === "slider") {
+                    showSliderView().then(() => (isAnimating = false));
+                } else {
+                    showGridView().then(() => (isAnimating = false));
+                }
+            };
+
+            // Show slider view with enhanced animation
+            const showSliderView = () => {
+                return new Promise((resolve) => {
+                    // Get the active item
+                    const activeItem = getGridItemByIndex(activeIndex);
+                    const activeItemRect = activeItem.getBoundingClientRect();
+
+                    // Get the active image URL and set it on the slider image
+                    const activeImageUrl = imageUrls[activeIndex];
+                    sliderImage.style.backgroundImage = activeImageUrl;
+                    sliderImageBg.style.backgroundImage = activeImageUrl;
+
+                    // Apply consistent styling
+                    sliderImage.style.backgroundSize = "cover";
+                    sliderImage.style.backgroundPosition = "center";
+                    sliderImageBg.style.backgroundSize = "cover";
+                    sliderImageBg.style.backgroundPosition = "center";
+                    sliderImageNext.style.backgroundSize = "cover";
+                    sliderImageNext.style.backgroundPosition = "center";
+
+                    // Update content for the active slide
+                    updateContent(activeIndex);
+
+                    // Position the slider image exactly over the active item
+                    gsap.set(sliderImage, {
+                        width: activeItemRect.width,
+                        height: activeItemRect.height,
+                        x: activeItemRect.left,
+                        y: activeItemRect.top,
+                        opacity: 1,
+                        visibility: "visible"
+                    });
+
+                    // Show transition overlay with a slight flash
+                    gsap.to(transitionOverlay, {
+                        opacity: 0.2,
+                        duration: TIMING.SHORTEST / 2,
+                        ease: "power2.in",
+                        onComplete: () => {
+                            gsap.to(transitionOverlay, {
+                                opacity: 0,
+                                duration: TIMING.SHORTEST,
+                                ease: "power2.out"
+                            });
+                        }
+                    });
+
+                    // STEP 1: First expand the height to 100vh using FLIP
+                    const heightState = Flip.getState(sliderImage);
+
+                    // Set the intermediate position (full height, original width)
+                    gsap.set(sliderImage, {
+                        height: "100vh",
+                        y: 0,
+                        width: activeItemRect.width,
+                        x: activeItemRect.left
+                    });
+
+                    // Animate the height expansion
+                    Flip.from(heightState, {
+                        duration: TIMING.BASE,
+                        ease: "mainEase",
+                        onComplete: () => {
+                            // STEP 2: Then expand the width to 100vw using FLIP
+                            const widthState = Flip.getState(sliderImage);
+
+                            // Set the final position (full width and height)
+                            gsap.set(sliderImage, {
+                                width: "100vw",
+                                x: 0
+                            });
+
+                            // Animate the width expansion
+                            Flip.from(widthState, {
+                                duration: TIMING.BASE,
+                                ease: "mainEase",
+                                onComplete: () => {
+                                    // Hide the grid once the slider image is in place
+                                    gsap.to(grid, {
+                                        opacity: 0,
+                                        duration: TIMING.SHORTEST,
+                                        ease: "power2.out"
+                                    });
+
+                                    // Show the slider image background with a subtle scaling effect
+                                    gsap.fromTo(
+                                        sliderImageBg,
+                                        {
+                                            opacity: 0,
+                                            scale: 1.05
+                                        },
+                                        {
+                                            opacity: 1,
+                                            scale: 1,
+                                            duration: TIMING.BASE,
+                                            visibility: "visible",
+                                            ease: "mainEase"
+                                        }
+                                    );
+
+                                    // Display the content with animation
+                                    gsap.to(content, {
+                                        opacity: 1,
+                                        duration: TIMING.BASE,
+                                        ease: "mainEase"
+                                    });
+
+                                    // Animate the content title span from below
+                                    gsap.fromTo(
+                                        contentTitleSpan,
+                                        {
+                                            y: "100%"
+                                        },
+                                        {
+                                            y: "0%",
+                                            duration: TIMING.BASE,
+                                            ease: "cinematic",
+                                            delay: TIMING.STAGGER_SMALL
+                                        }
+                                    );
+
+                                    // Fade in paragraph
+                                    gsap.to(contentParagraph, {
+                                        opacity: 1,
+                                        duration: TIMING.BASE,
+                                        delay: TIMING.STAGGER_MED,
+                                        ease: "mainEase"
+                                    });
+
+                                    // Show thumbnails with staggered animation
+                                    gsap.to(thumbnailItems, {
+                                        opacity: 1,
+                                        y: 0,
+                                        duration: TIMING.BASE,
+                                        stagger: TIMING.STAGGER_SMALL,
+                                        ease: "mainEase"
+                                    });
+
+                                    // Show navigation arrows
+                                    gsap.to([sliderNavPrev, sliderNavNext], {
+                                        opacity: 0.8,
+                                        duration: TIMING.BASE,
+                                        ease: "mainEase"
+                                    });
+
+                                    // Show slider indicator
+                                    gsap.to(sliderIndicator, {
+                                        opacity: 1,
+                                        duration: TIMING.BASE,
+                                        ease: "mainEase"
+                                    });
+
+                                    // Resolve the promise when the animation is complete
+                                    resolve();
+                                }
+                            });
+                        }
+                    });
+                });
+            };
+
+            // Slide transition animation
+            const slideTransition = (newIndex) => {
+                if (isAnimating || newIndex === activeIndex) return;
+                isAnimating = true;
+
+                // Determine slide direction based on indices
+                slideDirection = newIndex > activeIndex ? "right" : "left";
+                
+                // Update previous index for reference
+                previousIndex = activeIndex;
+                activeIndex = newIndex;
+
+                // Update thumbnail active state
+                document.querySelector(".thumbnail.active").classList.remove("active");
+                document.querySelector(`.thumbnail[data-index="${activeIndex}"]`).classList.add("active");
+
+                // Get the URLs
+                const previousImageUrl = imageUrls[previousIndex];
+                const newImageUrl = imageUrls[activeIndex];
+                
+                // Set background images
+                sliderImage.style.backgroundImage = previousImageUrl;
+                sliderImageNext.style.backgroundImage = newImageUrl;
+                
+                // Reset positions for animation
+                gsap.set(sliderImageNext, {
+                    x: slideDirection === "right" ? "100%" : "-100%",
+                    opacity: 1,
+                    visibility: "visible"
+                });
+
+                // Update content for new slide
+                updateContent(activeIndex);
+                
+                // Animate content out
+                gsap.to(contentTitleSpan, {
+                    y: slideDirection === "right" ? "-100%" : "100%",
+                    duration: TIMING.BASE,
+                    ease: "cinematic"
+                });
+                
+                gsap.to(contentParagraph, {
+                    opacity: 0,
+                    duration: TIMING.SHORTEST,
+                    ease: "power2.out"
+                });
+
+                // Perform slide transition
+                gsap.to(sliderImage, {
+                    x: slideDirection === "right" ? "-100%" : "100%",
+                    duration: TIMING.LONG,
+                    ease: "cinematic"
+                });
+                
+                gsap.to(sliderImageNext, {
+                    x: "0%",
+                    duration: TIMING.LONG,
+                    ease: "cinematic",
+                    onComplete: () => {
+                        // Update the current slide background image
+                        gsap.set(sliderImage, {
+                            backgroundImage: newImageUrl,
+                            x: "0%"
+                        });
+                        
+                        // Update background parallax layer
+                        gsap.to(sliderImageBg, {
+                            backgroundImage: newImageUrl,
+                            duration: TIMING.SHORTEST,
+                            ease: "power2.inOut"
+                        });
+                        
+                        // Hide the next slide layer
+                        gsap.set(sliderImageNext, {
+                            visibility: "hidden"
+                        });
+                        
+                        // Animate content back in with new content
+                        gsap.fromTo(
+                            contentTitleSpan,
+                            {
+                                y: slideDirection === "right" ? "100%" : "-100%"
+                            },
+                            {
+                                y: "0%",
+                                duration: TIMING.BASE,
+                                delay: TIMING.STAGGER_TINY,
+                                ease: "cinematic"
+                            }
+                        );
+                        
+                        gsap.to(contentParagraph, {
+                            opacity: 1,
+                            duration: TIMING.BASE,
+                            delay: TIMING.STAGGER_MED,
+                            ease: "mainEase"
+                        });
+                        
+                        isAnimating = false;
+                    }
+                });
+            };
+
+            // Show grid view animation
+            const showGridView = () => {
+                return new Promise((resolve) => {
+                    // Get the target position for the transition
+                    const activeItem = getGridItemByIndex(activeIndex);
+                    const activeItemRect = activeItem.getBoundingClientRect();
+
+                    // Hide navigation elements
+                    gsap.to([sliderNavPrev, sliderNavNext, sliderIndicator], {
+                        opacity: 0,
+                        duration: TIMING.SHORTEST,
+                        ease: "power2.out"
+                    });
+
+                    // Hide content with animation
+                    gsap.to(content, {
+                        opacity: 0,
+                        duration: TIMING.SHORTEST,
+                        ease: "power2.out"
+                    });
+
+                    // Hide thumbnails with staggered animation
+                    gsap.to(thumbnailItems, {
+                        opacity: 0,
+                        y: 20,
+                        duration: TIMING.BASE,
+                        stagger: TIMING.STAGGER_TINY,
+                        ease: "power2.out"
+                    });
+
+                    // Show the grid container and make it visible
+                    gsap.set(gridContainer, { visibility: "visible" });
+                    gsap.to(grid, {
+                        opacity: 1,
+                        duration: TIMING.SHORTEST,
+                        ease: "power2.in"
+                    });
+
+                    // Apply FLIP animation (First, Last, Invert, Play)
+                    // STEP 1: First get the current state of full-screen image
+                    const state = Flip.getState(sliderImage);
+
+                    // STEP 2: Set the final position (matching the grid item)
+                    gsap.set(sliderImage, {
+                        width: activeItemRect.width,
+                        height: activeItemRect.height,
+                        x: activeItemRect.left,
+                        y: activeItemRect.top
+                    });
+
+                    // Hide the background layer
+                    gsap.to(sliderImageBg, {
+                        opacity: 0,
+                        duration: TIMING.SHORTEST,
+                        ease: "power2.out"
+                    });
+
+                    // Show transition overlay with a slight flash
+                    gsap.to(transitionOverlay, {
+                        opacity: 0.2,
+                        duration: TIMING.SHORTEST / 2,
+                        ease: "power2.in",
+                        onComplete: () => {
+                            gsap.to(transitionOverlay, {
+                                opacity: 0,
+                                duration: TIMING.SHORTEST,
+                                ease: "power2.out"
+                            });
+                        }
+                    });
+
+                    // STEP 3 & 4: Invert and Play the animation
+                    Flip.from(state, {
+                        duration: TIMING.BASE,
+                        ease: "mainEase",
+                        onComplete: () => {
+                            // Hide the slider image after animation completes
+                            gsap.set(sliderImage, {
+                                visibility: "hidden",
+                                opacity: 0
+                            });
+
+                            isAnimating = false;
+                            resolve();
+                        }
+                    });
+                });
+            };
+
+            // Initialize the thumbnails and grid items
+            const initializeUI = () => {
+                // Set up grid item click events
+                gridItems.forEach((item) => {
+                    const index = parseInt(item.dataset.index);
+                    
+                    item.addEventListener("click", () => {
+                        if (currentMode === "grid") {
+                            activeIndex = index;
+                            toggleView("slider");
+                        }
+                    });
+                });
+
+                // Set up thumbnail click events
+                thumbnailItems.forEach((thumb) => {
+                    const index = parseInt(thumb.dataset.index);
+                    
+                    thumb.addEventListener("click", () => {
+                        if (currentMode === "slider" && !isAnimating) {
+                            slideTransition(index);
+                        }
+                    });
+                });
+
+                // Set up switch button events
+                switchGrid.addEventListener("click", () => toggleView("grid"));
+                switchSlider.addEventListener("click", () => toggleView("slider"));
+
+                // Set up slider navigation
+                sliderNavPrev.addEventListener("click", () => {
+                    if (isAnimating) return;
+                    const newIndex = activeIndex === 0 ? imageUrls.length - 1 : activeIndex - 1;
+                    slideTransition(newIndex);
+                });
+
+                sliderNavNext.addEventListener("click", () => {
+                    if (isAnimating) return;
+                    const newIndex = activeIndex === imageUrls.length - 1 ? 0 : activeIndex + 1;
+                    slideTransition(newIndex);
+                });
+
+                // Keyboard navigation
+                document.addEventListener("keydown", (e) => {
+                    if (currentMode !== "slider" || isAnimating) return;
+                    
+                    if (e.key === "ArrowLeft") {
+                        const newIndex = activeIndex === 0 ? imageUrls.length - 1 : activeIndex - 1;
+                        slideTransition(newIndex);
+                    } else if (e.key === "ArrowRight") {
+                        const newIndex = activeIndex === imageUrls.length - 1 ? 0 : activeIndex + 1;
+                        slideTransition(newIndex);
+                    } else if (e.key === "Escape") {
+                        toggleView("grid");
+                    }
+                });
+
+                // Add mouse parallax effect to background in slider mode
+                document.addEventListener("mousemove", (e) => {
+                    if (currentMode !== "slider") return;
+                    
+                    const xOffset = (e.clientX / window.innerWidth - 0.5) * 20;
+                    const yOffset = (e.clientY / window.innerHeight - 0.5) * 20;
+                    
+                    gsap.to(sliderImageBg, {
+                        x: xOffset,
+                        y: yOffset,
+                        duration: 1.2,
+                        ease: "power1.out"
+                    });
+                });
+
+                // Add animation to display the switch after a short delay
+                gsap.fromTo(
+                    switchContainer,
+                    { y: 50, opacity: 0 },
+                    {
+                        y: 0,
+                        opacity: 1,
+                        duration: TIMING.BASE,
+                        delay: TIMING.STAGGER_MED,
+                        ease: "cinematic"
+                    }
+                );
+
+                // Add subtle hover effect to switch container
+                switchContainer.addEventListener("mouseenter", () => {
+                    gsap.to(switchContainer, {
+                        padding: "12px 24px",
+                        duration: TIMING.SHORTEST,
+                        ease: "power2.out"
+                    });
+                });
+
+                switchContainer.addEventListener("mouseleave", () => {
+                    gsap.to(switchContainer, {
+                        padding: "10px 20px",
+                        duration: TIMING.SHORTEST,
+                        ease: "power2.out"
+                    });
+                });
+            };
+
+            // Initialize all UI components
+            initializeUI();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- Add GSAP and CustomEase plugin from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/CustomEase.min.js"></script>
+</head>
+<style>
+    @font-face {
+  src: url("https://fonts.cdnfonts.com/css/pp-neue-montreal") format("woff2");
+  font-family: "PP Neue Montreal", sans-serif;
+  font-weight: 400;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: "PP Neue Montreal", sans-serif;
+  background-color: #131211;
+  color: #f0ede8;
+  padding: 1rem;
+}
+
+.projects-component {
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.projects-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  flex: 1;
+  justify-content: center;
+  position: relative;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.projects-list::-webkit-scrollbar {
+  display: none;
+}
+
+.project-item {
+  width: 100%;
+  text-align: center;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.project-title-container {
+  position: relative;
+  display: inline-block;
+  z-index: 5;
+  pointer-events: auto;
+  will-change: transform, opacity, filter;
+}
+
+.project-title {
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0.5rem 0;
+}
+
+.hover-indicator {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: #f0ede8;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 100;
+  will-change: width, opacity;
+}
+
+.hover-indicator.left {
+  left: -20px;
+}
+
+.hover-indicator.right {
+  right: -20px;
+}
+
+.project-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  padding: 0 1rem;
+  margin: 0;
+  pointer-events: none;
+}
+
+.project-details {
+  width: 25%;
+  text-align: left;
+  font-size: 0.8rem;
+  letter-spacing: 0.05rem;
+  font-weight: 500;
+}
+
+.project-details .line-wrapper {
+  overflow: hidden;
+  margin-bottom: 0.25rem;
+}
+
+.project-details.right {
+  text-align: right;
+}
+
+.detail-label {
+  margin-bottom: 0.25rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.05rem;
+}
+
+.detail-year {
+  margin-top: 0.5rem;
+}
+
+.project-image {
+  width: 40%;
+  max-width: 400px;
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4/3;
+}
+
+.image-wrapper {
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+}
+
+.image-wrapper img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+@media (max-height: 700px) {
+  .project-title {
+    font-size: 2.5rem;
+  }
+
+  .project-item {
+    margin-bottom: 0.75rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .project-content {
+    flex-direction: column;
+  }
+
+  .project-details {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .project-details.right {
+    text-align: center;
+    margin-top: 1rem;
+    margin-bottom: 0;
+  }
+
+  .project-image {
+    width: 80%;
+  }
+
+  .project-title {
+    font-size: 2rem;
+  }
+}
+
+</style>
+<body>
+    
+    <div class="projects-component">
+  <div class="projects-list">
+    <div class="project-item" data-index="0">
+      <div class="project-title-container">
+        <div class="hover-indicator left"></div>
+        <h2 class="project-title">COSMIC DEPTHS</h2>
+        <div class="hover-indicator right"></div>
+      </div>
+      <div class="project-content">
+        <div class="project-details left">
+          <p class="detail-label">SPATIAL AWARENESS</p>
+          <p class="detail-label">EXPANSIVE VISION</p>
+          <p class="detail-label">ETERNAL MOMENT</p>
+        </div>
+        <div class="project-image">
+          <div class="image-wrapper">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5DGOuzEcICNInk_bVACS-qxOiagRHTNKxPw&s" alt="Cosmic depths image">
+          </div>
+        </div>
+        <div class="project-details right">
+          <p class="detail-label">SILENT OBSERVATION</p>
+          <p class="detail-label">TIMELESS CAPTURE</p>
+          <p class="detail-label">BEYOND PERCEPTION</p>
+          <p class="detail-year">/2025</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-item" data-index="1">
+      <div class="project-title-container">
+        <div class="hover-indicator left"></div>
+        <h2 class="project-title">FOURTH DIMENSION</h2>
+        <div class="hover-indicator right"></div>
+      </div>
+      <div class="project-content">
+        <div class="project-details left">
+          <p class="detail-label">TEMPORAL SHIFT</p>
+          <p class="detail-label">BEYOND LINEAR</p>
+          <p class="detail-label">QUANTUM SPACE</p>
+        </div>
+        <div class="project-image">
+          <div class="image-wrapper">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5DGOuzEcICNInk_bVACS-qxOiagRHTNKxPw&s" alt="Fourth dimension image">
+          </div>
+        </div>
+        <div class="project-details right">
+          <p class="detail-label">TIME COLLAPSE</p>
+          <p class="detail-label">HYPERCUBE VISION</p>
+          <p class="detail-label">BEYOND LIMITS</p>
+          <p class="detail-year">/2025</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-item" data-index="2">
+      <div class="project-title-container">
+        <div class="hover-indicator left"></div>
+        <h2 class="project-title">INNER VOID</h2>
+        <div class="hover-indicator right"></div>
+      </div>
+      <div class="project-content">
+        <div class="project-details left">
+          <p class="detail-label">NEGATIVE SPACE</p>
+          <p class="detail-label">CONSCIOUS ABSENCE</p>
+          <p class="detail-label">SILENT DEPTH</p>
+        </div>
+        <div class="project-image">
+          <div class="image-wrapper">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5DGOuzEcICNInk_bVACS-qxOiagRHTNKxPw&s" alt="Inner void image">
+          </div>
+        </div>
+        <div class="project-details right">
+          <p class="detail-label">CREATIVE EMPTINESS</p>
+          <p class="detail-label">QUANTUM POTENTIAL</p>
+          <p class="detail-label">ABSOLUTE STILLNESS</p>
+          <p class="detail-year">/2025</p>
+        </div>
+      </div>
+    </div>
+
+    
+        <div class="project-image">
+          <div class="image-wrapper">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5DGOuzEcICNInk_bVACS-qxOiagRHTNKxPw&s" alt="Present witness image">
+          </div>
+        </div>
+        <div class="project-details right">
+          <p class="detail-label">SUSPENDED MOMENT</p>
+          <p class="detail-label">DISTILLED REALITY</p>
+          <p class="detail-label">INFINITE FRAME</p>
+          <p class="detail-year">/2025</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-item" data-index="4">
+      <div class="project-title-container">
+        <div class="hover-indicator left"></div>
+        <h2 class="project-title">CREATIVE FLOW</h2>
+        <div class="hover-indicator right"></div>
+      </div>
+      <div class="project-content">
+        <div class="project-details left">
+          <p class="detail-label">CHANNELED INSIGHT</p>
+          <p class="detail-label">BEYOND THOUGHT</p>
+          <p class="detail-label">PURE EXPRESSION</p>
+        </div>
+        <div class="project-image">
+          <div class="image-wrapper">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5DGOuzEcICNInk_bVACS-qxOiagRHTNKxPw&s" alt="Creative flow image">
+          </div>
+        </div>
+        <div class="project-details right">
+          <p class="detail-label">TIMELESS STATE</p>
+          <p class="detail-label">DIRECT CONNECTION</p>
+          <p class="detail-label">SOURCE ALIGNMENT</p>
+          <p class="detail-year">/2025</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-item" data-index="5">
+      <div class="project-title-container">
+        <div class="hover-indicator left"></div>
+        <h2 class="project-title">UNIVERSAL LENS</h2>
+        <div class="hover-indicator right"></div>
+      </div>
+      <div class="project-content">
+        <div class="project-details left">
+          <p class="detail-label">COSMIC PERSPECTIVE</p>
+          <p class="detail-label">UNIVERSAL TRUTH</p>
+          <p class="detail-label">SINGULAR VISION</p>
+        </div>
+        <div class="project-image">
+          <div class="image-wrapper">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5DGOuzEcICNInk_bVACS-qxOiagRHTNKxPw&s" alt="Universal lens image">
+          </div>
+        </div>
+        <div class="project-details right">
+          <p class="detail-label">SPACE COLLAPSE</p>
+          <p class="detail-label">UNIFIED FIELD</p>
+          <p class="detail-label">QUANTUM OBSERVER</p>
+          <p class="detail-year">/2025</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-item" data-index="6">
+      <div class="project-title-container">
+        <div class="hover-indicator left"></div>
+        <h2 class="project-title">ESSENTIAL LIGHT</h2>
+        <div class="hover-indicator right"></div>
+      </div>
+      <div class="project-content">
+        <div class="project-details left">
+          <p class="detail-label">PHOTON DANCE</p>
+          <p class="detail-label">ILLUMINATION</p>
+          <p class="detail-label">PURE REVELATION</p>
+        </div>
+        <div class="project-image">
+          <div class="image-wrapper">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5DGOuzEcICNInk_bVACS-qxOiagRHTNKxPw&s" alt="Essential light image">
+          </div>
+        </div>
+        <div class="project-details right">
+          <p class="detail-label">LUMINOUS TRUTH</p>
+          <p class="detail-label">SPACE BETWEEN</p>
+          <p class="detail-label">RADIANT ESSENCE</p>
+          <p class="detail-year">/2025</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="project-item" data-index="7">
+      <div class="project-title-container">
+        <div class="hover-indicator left"></div>
+        <h2 class="project-title">SACRED FRAME</h2>
+        <div class="hover-indicator right"></div>
+      </div>
+      <div class="project-content">
+        <div class="project-details left">
+          <p class="detail-label">DECISIVE MOMENT</p>
+          <p class="detail-label">ETERNAL CAPTURE</p>
+          <p class="detail-label">BOUNDARY DISSOLVE</p>
+        </div>
+        <div class="project-image">
+          <div class="image-wrapper">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5DGOuzEcICNInk_bVACS-qxOiagRHTNKxPw&s" alt="Sacred frame image">
+          </div>
+        </div>
+        <div class="project-details right">
+          <p class="detail-label">LIMITLESS VIEW</p>
+          <p class="detail-label">SACRED GEOMETRY</p>
+          <p class="detail-label">INFINITE MOMENT</p>
+          <p class="detail-year">/2025</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+  // Register GSAP plugins
+  gsap.registerPlugin(CustomEase);
+
+  // Create custom eases
+  CustomEase.create("projectExpand", "0.42, 0, 1, 1"); // ease-in then linear
+  CustomEase.create("projectCollapse", "0, 0, 0.58, 1"); // ease-out then linear
+  CustomEase.create("textReveal", "0.25, 1, 0.5, 1");
+  CustomEase.create("squareStretch", "0.22, 1, 0.36, 1");
+
+  const projectItems = document.querySelectorAll(".project-item");
+  let activeProject = null;
+  let isClickAllowed = true;
+
+  // Set initial invisibility of all project items for staggered reveal
+  gsap.set(projectItems, {
+    opacity: 0,
+    y: 20,
+    scale: 0.97
+  });
+
+  // Add staggered entrance animation on page load
+  const entranceTl = gsap.timeline({
+    defaults: {
+      ease: "power1.out"
+    }
+  });
+
+  entranceTl.to(projectItems, {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    duration: 0.35,
+    stagger: 0.04,
+    clearProps: "opacity,y,scale",
+    onComplete: function () {
+      // Ensure all items are fully visible after animation completes
+      gsap.set(projectItems, {
+        clearProps: "all"
+      });
+    }
+  });
+
+  // Initialize text splitting
+  projectItems.forEach((project) => {
+    const detailElements = project.querySelectorAll(".project-details p");
+    detailElements.forEach((element) => {
+      // Create a simple text splitting approach that works without SplitType
+      const originalText = element.innerText;
+      element.innerHTML = "";
+      const lineWrapper = document.createElement("div");
+      lineWrapper.className = "line-wrapper";
+      lineWrapper.style.overflow = "hidden"; // Added overflow hidden for cleaner text animations
+      const lineElement = document.createElement("div");
+      lineElement.className = "line";
+      lineElement.innerText = originalText;
+      lineWrapper.appendChild(lineElement);
+      element.appendChild(lineWrapper);
+
+      // Set initial GSAP position
+      gsap.set(lineElement, {
+        y: "100%",
+        opacity: 0
+      });
+    });
+
+    // Set up hover indicators
+    const titleContainer = project.querySelector(".project-title-container");
+    const leftIndicator = project.querySelector(".hover-indicator.left");
+    const rightIndicator = project.querySelector(".hover-indicator.right");
+
+    // Set initial sizes
+    gsap.set(leftIndicator, {
+      width: "0px",
+      height: "8px",
+      opacity: 0,
+      x: -10,
+      zIndex: 20,
+      background: "#f0ede8"
+    });
+
+    gsap.set(rightIndicator, {
+      width: "0px",
+      height: "8px",
+      opacity: 0,
+      x: 10,
+      zIndex: 20,
+      background: "#f0ede8"
+    });
+
+    // Add hover event listeners
+    titleContainer.addEventListener("mouseenter", () => {
+      // Only show hover effect on non-active projects
+      if (project !== activeProject) {
+        gsap.killTweensOf([leftIndicator, rightIndicator]);
+
+        // Reset any previous animations
+        gsap.set([leftIndicator, rightIndicator], {
+          clearProps: "all",
+          opacity: 0,
+          width: "0px",
+          height: "8px",
+          x: function (i) {
+            return i === 0 ? -10 : 10;
+          }
+        });
+
+        // Left square animation - stretch then contract
+        const leftTl = gsap.timeline();
+        leftTl
+          .set(leftIndicator, {
+            opacity: 1,
+            width: "0px"
+          })
+          .to(leftIndicator, {
+            x: 0,
+            width: "12px",
+            duration: 0.15,
+            ease: "power2.out"
+          })
+          .to(leftIndicator, {
+            width: "8px",
+            duration: 0.1,
+            ease: "squareStretch"
+          });
+
+        // Right square animation - delayed, stretch then contract
+        const rightTl = gsap.timeline({
+          delay: 0.06
+        });
+        rightTl
+          .set(rightIndicator, {
+            opacity: 1,
+            width: "0px"
+          })
+          .to(rightIndicator, {
+            x: 0,
+            width: "12px",
+            duration: 0.15,
+            ease: "power2.out"
+          })
+          .to(rightIndicator, {
+            width: "8px",
+            duration: 0.1,
+            ease: "squareStretch"
+          });
+      }
+    });
+
+    titleContainer.addEventListener("mouseleave", () => {
+      // Only animate out for non-active projects
+      if (project !== activeProject) {
+        gsap.killTweensOf([leftIndicator, rightIndicator]);
+
+        // Reverse animation for left square
+        const leftTl = gsap.timeline();
+        leftTl
+          .to(leftIndicator, {
+            width: "12px",
+            duration: 0.1,
+            ease: "power1.in"
+          })
+          .to(leftIndicator, {
+            width: "0px",
+            x: -10,
+            opacity: 0,
+            duration: 0.15,
+            ease: "power2.in"
+          });
+
+        // Reverse animation for right square (delayed)
+        const rightTl = gsap.timeline({
+          delay: 0.03
+        });
+        rightTl
+          .to(rightIndicator, {
+            width: "12px",
+            duration: 0.1,
+            ease: "power1.in"
+          })
+          .to(rightIndicator, {
+            width: "0px",
+            x: 10,
+            opacity: 0,
+            duration: 0.15,
+            ease: "power2.in"
+          });
+      }
+    });
+  });
+
+  // Function to apply scaling to projects with gradual opacity and blur
+  const applyScaling = (activeIndex) => {
+    projectItems.forEach((item, index) => {
+      const titleContainer = item.querySelector(".project-title-container");
+      const distance = Math.abs(index - activeIndex);
+
+      if (index === activeIndex) {
+        // Active project
+        gsap.to(titleContainer, {
+          scale: 1,
+          opacity: 1,
+          filter: "blur(0px)",
+          y: 0,
+          duration: 0.3,
+          ease: "projectExpand"
+        });
+      } else if (distance === 1) {
+        // Distance 1 projects
+        gsap.to(titleContainer, {
+          scale: 0.95,
+          opacity: 0.7,
+          filter: "blur(1px)",
+          y: 0,
+          duration: 0.3,
+          ease: "projectExpand"
+        });
+      } else if (distance === 2) {
+        // Distance 2 projects
+        gsap.to(titleContainer, {
+          scale: 0.9,
+          opacity: 0.5,
+          filter: "blur(2px)",
+          y: 0,
+          duration: 0.3,
+          ease: "projectExpand"
+        });
+      } else {
+        // Distance 3+ projects
+        gsap.to(titleContainer, {
+          scale: 0.85,
+          opacity: 0.3,
+          filter: "blur(4px)",
+          y: 0,
+          duration: 0.3,
+          ease: "projectExpand"
+        });
+      }
+    });
+  };
+
+  // Function to reset all scaling
+  const resetScaling = () => {
+    projectItems.forEach((item) => {
+      const titleContainer = item.querySelector(".project-title-container");
+      gsap.to(titleContainer, {
+        scale: 1,
+        opacity: 1,
+        filter: "blur(0px)",
+        y: 0,
+        duration: 0.3,
+        ease: "projectCollapse"
+      });
+    });
+  };
+
+  // Set initial states for images
+  gsap.set(".image-wrapper img", {
+    clipPath: "inset(100% 0 0 0)"
+  });
+
+  // Function to toggle project expansion
+  const toggleProject = (project) => {
+    // Debounce clicks
+    if (!isClickAllowed) return;
+    isClickAllowed = false;
+    setTimeout(() => {
+      isClickAllowed = true;
+    }, 300);
+
+    // If clicking the active project, close it
+    if (activeProject === project) {
+      const content = project.querySelector(".project-content");
+      const image = project.querySelector(".image-wrapper img");
+      const details = project.querySelectorAll(".project-details .line");
+      const title = project.querySelector(".project-title");
+
+      // Close animation with ease-out then linear for letter spacing
+      gsap.to(title, {
+        fontSize: "3rem",
+        letterSpacing: "-0.02em",
+        duration: 0.2,
+        ease: "projectCollapse"
+      });
+
+      gsap.to(image, {
+        clipPath: "inset(100% 0 0 0)",
+        duration: 0.15,
+        ease: "none"
+      });
+
+      // SLOWER ANIMATION for project details when closing
+      gsap.to(details, {
+        y: "100%",
+        opacity: 0,
+        duration: 0.5, // Increased from 0.15 to 0.5 for slower animation
+        stagger: 0.05, // Increased from 0.015 to 0.05 for slower staggered effect
+        ease: "projectCollapse"
+      });
+
+      gsap.to(content, {
+        maxHeight: 0,
+        opacity: 0,
+        margin: 0,
+        duration: 0.2,
+        ease: "projectCollapse",
+        onComplete: () => {
+          // After animation completes
+          activeProject = null;
+          resetScaling();
+          // Reset spacing
+          gsap.to(projectItems, {
+            marginBottom: "1.5rem",
+            duration: 0.3,
+            ease: "projectExpand",
+            stagger: 0.02
+          });
+        }
+      });
+    } else {
+      // Close active project if exists
+      if (activeProject) {
+        const oldContent = activeProject.querySelector(".project-content");
+        const oldImage = activeProject.querySelector(".image-wrapper img");
+        const oldDetails = activeProject.querySelectorAll(
+          ".project-details .line"
+        );
+        const oldTitle = activeProject.querySelector(".project-title");
+
+        // Close previous project
+        gsap.to(oldTitle, {
+          fontSize: "3rem",
+          letterSpacing: "-0.02em",
+          duration: 0.2,
+          ease: "projectCollapse"
+        });
+
+        gsap.to(oldImage, {
+          clipPath: "inset(100% 0 0 0)",
+          duration: 0.15,
+          ease: "none"
+        });
+
+        // SLOWER ANIMATION for project details when closing previous project
+        gsap.to(oldDetails, {
+          y: "100%",
+          opacity: 0,
+          duration: 0.5, // Increased from 0.15 to 0.5 for slower animation
+          stagger: 0.05, // Increased from 0.015 to 0.05 for slower staggered effect
+          ease: "projectCollapse"
+        });
+
+        gsap.to(oldContent, {
+          maxHeight: 0,
+          opacity: 0,
+          margin: 0,
+          duration: 0.2,
+          ease: "projectCollapse",
+          onComplete: () => openNewProject()
+        });
+      } else {
+        openNewProject();
+      }
+
+      function openNewProject() {
+        // Open new project
+        activeProject = project;
+
+        // Apply scaling with blur
+        const activeIndex = Array.from(projectItems).indexOf(project);
+        applyScaling(activeIndex);
+
+        // Get elements to animate
+        const content = project.querySelector(".project-content");
+        const image = project.querySelector(".image-wrapper img");
+        const details = project.querySelectorAll(".project-details .line");
+        const title = project.querySelector(".project-title");
+
+        // Pre-render content to get accurate height
+        gsap.set(content, {
+          display: "flex",
+          autoAlpha: 0,
+          height: "auto",
+          maxHeight: "none",
+          overflow: "hidden"
+        });
+
+        // Get accurate measurement
+        const contentHeight = content.offsetHeight;
+
+        // Reset for animation
+        gsap.set(content, {
+          maxHeight: 0,
+          height: "auto",
+          autoAlpha: 0,
+          overflow: "hidden"
+        });
+
+        // Create a timeline for synchronized animations
+        const tl = gsap.timeline({
+          defaults: {
+            ease: "projectExpand"
+          }
+        });
+
+        // Animate opening with ease-in then linear for letter spacing
+        tl.to(
+          title,
+          {
+            fontSize: window.innerWidth > 768 ? "3.5rem" : "2.5rem",
+            letterSpacing: "0.01em",
+            duration: 0.35,
+            ease: "projectExpand"
+          },
+          0
+        );
+
+        tl.to(
+          content,
+          {
+            maxHeight: contentHeight,
+            autoAlpha: 1,
+            margin: "2rem 0",
+            duration: 0.4,
+            pointerEvents: "auto"
+          },
+          0
+        );
+
+        tl.to(
+          image,
+          {
+            clipPath: "inset(0% 0 0 0)",
+            duration: 0.35,
+            ease: "power2.out"
+          },
+          0.05
+        );
+
+        // SLOWER ANIMATION for project details when opening
+        tl.to(
+          details,
+          {
+            y: "0%",
+            opacity: 1,
+            duration: 0.8, // Increased from 0.3 to 0.8 for slower animation
+            stagger: 0.08, // Increased from 0.025 to 0.08 for slower staggered effect
+            ease: "textReveal"
+          },
+          0.2 // Slightly delayed start for better sequencing
+        );
+
+        // Adjust spacing for better visibility
+        if (activeIndex > 0) {
+          gsap.to(Array.from(projectItems).slice(0, activeIndex), {
+            marginBottom: "0.5rem",
+            duration: 0.3,
+            ease: "projectCollapse",
+            stagger: 0.02
+          });
+        }
+
+        if (activeIndex < projectItems.length - 1) {
+          gsap.to(Array.from(projectItems).slice(activeIndex + 1), {
+            marginBottom: "0.5rem",
+            duration: 0.3,
+            ease: "projectCollapse",
+            stagger: 0.02
+          });
+        }
+
+        // Ensure visible in viewport
+        setTimeout(() => {
+          const projectsList = document.querySelector(".projects-list");
+          const rect = project.getBoundingClientRect();
+          const containerRect = projectsList.getBoundingClientRect();
+
+          if (
+            rect.top < containerRect.top ||
+            rect.bottom > containerRect.bottom
+          ) {
+            const scrollOffset =
+              rect.top -
+              containerRect.top -
+              containerRect.height / 2 +
+              rect.height / 2;
+
+            projectsList.scrollBy({
+              top: scrollOffset,
+              behavior: "smooth"
+            });
+          }
+        }, 50);
+      }
+    }
+  };
+
+  // Add click event listeners
+  projectItems.forEach((item) => {
+    item.addEventListener("click", () => {
+      toggleProject(item);
+    });
+  });
+
+  // Handle window resize
+  window.addEventListener("resize", () => {
+    if (activeProject) {
+      // Update content height on resize
+      const content = activeProject.querySelector(".project-content");
+
+      // Update title font size
+      const title = activeProject.querySelector(".project-title");
+      gsap.to(title, {
+        fontSize: window.innerWidth > 768 ? "3.5rem" : "2.5rem",
+        duration: 0.2
+      });
+
+      // Re-measure content height
+const currentHeight = parseFloat(getComputedStyle(content).height);
+      
+// Save current auto height
+gsap.set(content, {
+  height: "auto",
+  maxHeight: "none",
+});
+const autoHeight = content.offsetHeight;
+      
+// Restore current height then animate to new height
+gsap.set(content, {
+  height: currentHeight,
+  maxHeight: currentHeight
+});
+      
+gsap.to(content, {
+  maxHeight: autoHeight,
+  duration: 0.3,
+  ease: "power2.out"
+});
+    }
+  });
+
+  // Add keyboard navigation
+  document.addEventListener("keydown", (e) => {
+    if (!activeProject) return;
+    
+    const activeIndex = Array.from(projectItems).indexOf(activeProject);
+    let targetIndex = activeIndex;
+    
+    // Arrow up - previous project
+    if (e.key === "ArrowUp" && activeIndex > 0) {
+      targetIndex = activeIndex - 1;
+    }
+    // Arrow down - next project
+    else if (e.key === "ArrowDown" && activeIndex < projectItems.length - 1) {
+      targetIndex = activeIndex + 1;
+    }
+    // Escape - close current project
+    else if (e.key === "Escape") {
+      toggleProject(activeProject);
+      return;
+    }
+    
+    // If index changed, toggle appropriate project
+    if (targetIndex !== activeIndex) {
+      toggleProject(projectItems[targetIndex]);
+    }
+  });
+  
+  // Add touch swipe support for mobile
+  let touchStartY = 0;
+  let touchEndY = 0;
+  
+  document.addEventListener("touchstart", (e) => {
+    touchStartY = e.changedTouches[0].screenY;
+  });
+  
+  document.addEventListener("touchend", (e) => {
+    if (!activeProject) return;
+    
+    touchEndY = e.changedTouches[0].screenY;
+    const touchDiff = touchStartY - touchEndY;
+    
+    // Minimum swipe distance threshold
+    if (Math.abs(touchDiff) < 50) return;
+    
+    const activeIndex = Array.from(projectItems).indexOf(activeProject);
+    let targetIndex = activeIndex;
+    
+    // Swipe up - next project
+    if (touchDiff > 0 && activeIndex < projectItems.length - 1) {
+      targetIndex = activeIndex + 1;
+    }
+    // Swipe down - previous project
+    else if (touchDiff < 0 && activeIndex > 0) {
+      targetIndex = activeIndex - 1;
+    }
+    
+    // If index changed, toggle appropriate project
+    if (targetIndex !== activeIndex) {
+      toggleProject(projectItems[targetIndex]);
+    }
+  });
+  
+  // Add scroll listener to collapse active project when scrolling far away
+  document.querySelector(".projects-list").addEventListener("scroll", debounce((e) => {
+    if (!activeProject) return;
+    
+    const rect = activeProject.getBoundingClientRect();
+    const windowHeight = window.innerHeight;
+    
+    // If active project is far out of view, collapse it
+    if (rect.top < -windowHeight/2 || rect.bottom > windowHeight*1.5) {
+      toggleProject(activeProject);
+    }
+  }, 200)); // Debounce to improve performance
+  
+  // Simple debounce function
+  function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  }
+  
+  // Add preload animation for images on hover
+  projectItems.forEach((project) => {
+    const titleContainer = project.querySelector(".project-title-container");
+    const image = project.querySelector(".image-wrapper img");
+    
+    // Preload images on hover when project is not active
+    titleContainer.addEventListener("mouseenter", () => {
+      if (project !== activeProject) {
+        // Add a slight "peek" animation for the image
+        gsap.killTweensOf(image);
+        gsap.set(image, {
+          clipPath: "inset(100% 0 0 0)"
+        });
+        gsap.to(image, {
+          clipPath: "inset(90% 0 0 0)",
+          duration: 0.2,
+          ease: "power1.out"
+        });
+      }
+    });
+    
+    titleContainer.addEventListener("mouseleave", () => {
+      if (project !== activeProject) {
+        // Reset image peek animation
+        gsap.killTweensOf(image);
+        gsap.to(image, {
+          clipPath: "inset(100% 0 0 0)",
+          duration: 0.1,
+          ease: "power1.in"
+        });
+      }
+    });
+  });
+  
+  // Add a load complete class for potential final styling
+  document.body.classList.add("loaded");
+});
+</script>
+</body>
+</html>
